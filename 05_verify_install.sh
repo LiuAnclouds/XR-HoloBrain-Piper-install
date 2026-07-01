@@ -95,7 +95,7 @@ for pkg in \
     missing=1
   fi
 done
-if [ -d "$ROBO_PATH/ros2_package/install/robo_orchard_piper_ros2" ]; then
+if [ -d "$ROBO_PATH/ros2_package/install/share/robo_orchard_piper_ros2" ] || [ -d "$ROBO_PATH/ros2_package/install/robo_orchard_piper_ros2" ]; then
   echo "[OK] ROS2 package installed: robo_orchard_piper_ros2"
 else
   echo "[FAIL] ROS2 package install dir missing: robo_orchard_piper_ros2"
@@ -103,7 +103,7 @@ else
 fi
 teleop_entry="$ROBO_PATH/ros2_package/install/lib/robo_orchard_teleop_ros2/pico_bridge"
 old_teleop_entry="$ROBO_PATH/ros2_package/install/robo_orchard_teleop_ros2/lib/robo_orchard_teleop_ros2/pico_bridge"
-if [ -f "$teleop_entry" ] && head -1 "$teleop_entry" | grep -q "$ROBO_PATH/venv/roboorchard-venv/bin/python3"; then
+if [ -f "$teleop_entry" ] && head -1 "$teleop_entry" | grep -Eq "^#!$ROBO_PATH/venv/roboorchard-venv/bin/python3?$"; then
   echo "[OK] teleop entrypoint uses venv python"
 else
   echo "[FAIL] teleop entrypoint does not use venv python: $teleop_entry"
