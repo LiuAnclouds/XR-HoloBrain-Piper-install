@@ -51,11 +51,8 @@ CONTAINER_ROOT=/moonxkj        # container mount root
 DOCKER_NAME=holobrain          # container name
 IMAGE_NAME=holobrain-dev:latest
 ROS_DOMAIN_ID=2
-RIGHT_READY='[...]'            # optional; only patches launch.yaml if provided
 ```
 
-
-`RIGHT_READY` is intentionally optional. The installer does not force a robot-specific safe pose or overwrite a stock `launch.yaml` unless this variable is explicitly provided and the file already contains a `RIGHT_READY:` field.
 
 ## Notes
 
