@@ -13,6 +13,16 @@ RIGHT_READY=${RIGHT_READY:-"[-0.108, 0.096, -1.026, 0.174, 1.077, -0.045, 0.0]"}
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 PATCH_CPP=${PATCH_CPP:-$SCRIPT_DIR/patches/pybind_patch.cpp}
 
+echo "[0/4] Install host launch tools"
+sudo apt-get update
+sudo apt-get install -y tmux pipx
+python3 -m pipx ensurepath || true
+python3 -m pipx install tmuxp --force
+if ! grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.bashrc"; then
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+fi
+export PATH="$HOME/.local/bin:$PATH"
+
 echo "[1/4] Install RoboOrchard in Docker"
 docker exec -i "$DOCKER_NAME" bash <<BASH
 set -e

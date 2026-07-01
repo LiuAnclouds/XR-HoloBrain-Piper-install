@@ -18,8 +18,23 @@ section() {
   echo "========== $* =========="
 }
 
+check_host_tools() {
+  section "0. Host launch tools"
+  export PATH="$HOME/.local/bin:$PATH"
+  if command -v tmux >/dev/null 2>&1; then
+    ok "tmux found"
+  else
+    fail "tmux is missing. Run: bash 03_install_roboorchard_xr.sh"
+  fi
+  if command -v tmuxp >/dev/null 2>&1; then
+    ok "tmuxp found"
+  else
+    fail "tmuxp is missing. Run: bash 03_install_roboorchard_xr.sh"
+  fi
+}
+
 check_container() {
-  section "0. Docker container"
+  section "1. Docker container"
   if docker ps --format '{{.Names}}' | grep -qx "$DOCKER_NAME"; then
     ok "Docker container '$DOCKER_NAME' is running"
   else
@@ -29,7 +44,7 @@ check_container() {
 }
 
 check_roboorchard() {
-  section "1. RoboOrchard + ROS2"
+  section "2. RoboOrchard + ROS2"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$ROBO_PATH" ]; then
@@ -89,7 +104,7 @@ BASH
 }
 
 check_xr_pybind() {
-  section "2. XRoboToolkit PC Service Pybind"
+  section "3. XRoboToolkit PC Service Pybind"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" -e PYBIND_PATH="$PYBIND_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$PYBIND_PATH" ]; then
@@ -115,7 +130,7 @@ BASH
 }
 
 check_piper_sdk() {
-  section "3. piper_sdk"
+  section "4. piper_sdk"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" -e PIPER_PATH="$PIPER_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$PIPER_PATH" ]; then
@@ -138,7 +153,7 @@ BASH
 }
 
 check_pc_service() {
-  section "4. Host PC Service"
+  section "5. Host PC Service"
   if [ ! -x /opt/apps/roboticsservice/RoboticsServiceProcess ]; then
     fail "PC Service executable is missing: /opt/apps/roboticsservice/RoboticsServiceProcess"
     echo "[FAIL] Run: bash 03_install_roboorchard_xr.sh"
@@ -157,6 +172,7 @@ check_pc_service() {
   fi
 }
 
+check_host_tools
 check_container && {
   check_roboorchard
   check_xr_pybind
