@@ -45,6 +45,43 @@ check_container() {
 
 
 
+check_tmuxp_docker_shell() {
+  section "2. tmuxp Docker shell"
+  export PATH="$HOME/.local/bin:$PATH"
+  local test_yaml=/tmp/holobrain_tmuxp_env_check.yaml
+  local session=holobrain_env_check
+  cat > "$test_yaml" <<YAML
+session_name: $session
+environment:
+  DOCKER_NAME: $DOCKER_NAME
+  DOCKER_VENV_PATH: $ROBO_PATH/venv/roboorchard-venv
+shell_command_before:
+  - docker exec -it
+    -e DOCKER_VENV_PATH="\$DOCKER_VENV_PATH"
+    \$DOCKER_NAME /bin/bash
+  - source \$DOCKER_VENV_PATH/bin/activate
+windows:
+  - window_name: check
+    panes:
+      - shell_command:
+        - command -v python
+        - echo TMUXP_DOCKER_ENV_OK
+YAML
+  tmux kill-session -t "$session" 2>/dev/null || true
+  tmuxp load -d "$test_yaml" >/tmp/holobrain_tmuxp_env_check.out 2>/tmp/holobrain_tmuxp_env_check.err || true
+  sleep 3
+  local capture
+  capture=$(tmux capture-pane -pt "$session:0.0" -S -80 2>/dev/null || true)
+  tmux kill-session -t "$session" 2>/dev/null || true
+  if echo "$capture" | grep -q "$ROBO_PATH/venv/roboorchard-venv/bin/python" && echo "$capture" | grep -q "TMUXP_DOCKER_ENV_OK"; then
+    ok "tmuxp enters Docker and activates venv"
+  else
+    fail "tmuxp did not enter Docker/venv correctly"
+    echo "$capture" | tail -40
+  fi
+}
+
+
 check_roboorchard() {
   section "3. RoboOrchard + ROS2"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" "$DOCKER_NAME" bash <<'BASH'
@@ -205,6 +242,7 @@ check_pc_service() {
 
 check_host_tools
 check_container && {
+  check_tmuxp_docker_shell
   check_roboorchard
   check_xr_pybind
   check_piper_sdk
