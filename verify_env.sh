@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+set -u
+
+DOCKER_NAME=${DOCKER_NAME:-holobrain}
+SOP_DIR=${SOP_DIR:-$HOME/SOP}
+FAILED=0
+
+ok() { echo "[OK] $*"; }
+fail() { echo "[FAIL] $*"; FAILED=1; }
+warn() { echo "[WARN] $*"; }
+
+section() {
+  echo
+  echo "========== $* =========="
+}
+
+check_container() {
+  section "0. Docker container"
+  if docker ps --format '{{.Names}}' | grep -qx "$DOCKER_NAME"; then
+    ok "Docker container '$DOCKER_NAME' is running"
+  else
+    fail "Docker container '$DOCKER_NAME' is not running. Run: bash run_holobrain_container.sh"
+    return 1
+  fi
+}
+
+check_roboorchard() {
+  section "1. RoboOrchard + ROS2"
+  docker exec -i "$DOCKER_NAME" bash <<'BASH'
+set -e
+if [ ! -d /moonxkj/RoboOrchard ]; then
+  echo "[FAIL] /moonxkj/RoboOrchard is missing"
+  exit 10
+fi
+if [ ! -f /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate ]; then
+  echo "[FAIL] RoboOrchard venv is missing. Run: bash install_main.sh"
+  exit 11
+fi
+source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
+python - <<'PY'
+import robo_orchard_core
+import robo_orchard_lab
+print('[OK] RoboOrchard Python packages import OK')
+PY
+if [ ! -f /moonxkj/RoboOrchard/ros2_package/install/setup.bash ]; then
+  echo "[FAIL] RoboOrchard ROS2 install/setup.bash is missing. Run: bash install_main.sh"
+  exit 12
+fi
+source /opt/ros/humble/setup.bash
+source /moonxkj/RoboOrchard/ros2_package/install/setup.bash
+missing=0
+for pkg in \
+  robo_orchard_data_msg_ros2 \
+  robo_orchard_pico_msg_ros2 \
+  robo_orchard_teleop_msg_ros2 \
+  robo_orchard_piper_msg_ros2 \
+  robo_orchard_piper_ros2 \
+  robo_orchard_teleop_ros2; do
+  if ros2 pkg list | grep -qx "$pkg"; then
+    echo "[OK] ROS2 package found: $pkg"
+  else
+    echo "[FAIL] ROS2 package missing: $pkg"
+    missing=1
+  fi
+done
+exit $missing
+BASH
+  local rc=$?
+  if [ $rc -ne 0 ]; then
+    fail "RoboOrchard environment is incomplete"
+  else
+    ok "RoboOrchard environment is complete"
+  fi
+}
+
+check_xr_pybind() {
+  section "2. XRoboToolkit PC Service Pybind"
+  docker exec -i "$DOCKER_NAME" bash <<'BASH'
+set -e
+if [ ! -d /moonxkj/XRoboToolkit-PC-Service-Pybind ]; then
+  echo "[FAIL] /moonxkj/XRoboToolkit-PC-Service-Pybind is missing"
+  exit 20
+fi
+source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
+python - <<'PY'
+import xrobotoolkit_sdk as xrt
+print('[OK] xrobotoolkit_sdk import OK')
+print('[OK] get_latest_message:', hasattr(xrt, 'get_latest_message'))
+if not hasattr(xrt, 'get_latest_message'):
+    raise SystemExit(1)
+PY
+BASH
+  local rc=$?
+  if [ $rc -ne 0 ]; then
+    fail "XRoboToolkit pybind environment is incomplete. Run: bash install_main.sh"
+  else
+    ok "XRoboToolkit pybind environment is complete"
+  fi
+}
+
+check_piper_sdk() {
+  section "3. piper_sdk"
+  docker exec -i "$DOCKER_NAME" bash <<'BASH'
+set -e
+if [ ! -d /moonxkj/piper_sdk ]; then
+  echo "[FAIL] /moonxkj/piper_sdk is missing"
+  exit 30
+fi
+source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
+python - <<'PY'
+from piper_sdk import C_PiperInterface_V2
+print('[OK] piper_sdk import OK')
+PY
+BASH
+  local rc=$?
+  if [ $rc -ne 0 ]; then
+    fail "piper_sdk environment is incomplete. Run: bash install_piper_sdk.sh"
+  else
+    ok "piper_sdk environment is complete"
+  fi
+}
+
+check_pc_service() {
+  section "4. Host PC Service"
+  if [ ! -x /opt/apps/roboticsservice/RoboticsServiceProcess ]; then
+    warn "PC Service executable is missing: /opt/apps/roboticsservice/RoboticsServiceProcess"
+    warn "If needed, run: bash install_main.sh"
+    return 0
+  fi
+  if [ ! -x /opt/apps/roboticsservice/runService.sh ]; then
+    warn "PC Service runService.sh is missing or not executable"
+    return 0
+  fi
+  cd /opt/apps/roboticsservice || return 0
+  if LD_LIBRARY_PATH=$PWD:$PWD/lib:$PWD/SDK/arm64 ldd ./RoboticsServiceProcess | grep -q "not found"; then
+    fail "PC Service has missing shared libraries"
+    LD_LIBRARY_PATH=$PWD:$PWD/lib:$PWD/SDK/arm64 ldd ./RoboticsServiceProcess | grep "not found" || true
+  else
+    ok "PC Service ldd OK"
+  fi
+}
+
+check_container && {
+  check_roboorchard
+  check_xr_pybind
+  check_piper_sdk
+}
+check_pc_service
+
+echo
+if [ "$FAILED" -eq 0 ]; then
+  echo "All required environment checks passed."
+  exit 0
+else
+  echo "Some environment checks failed. Fix the [FAIL] sections above."
+  exit 1
+fi

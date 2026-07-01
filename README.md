@@ -28,6 +28,13 @@ bash install_main.sh
 bash install_piper_sdk.sh
 ```
 
+
+## 3. Verify Environment
+
+```bash
+bash verify_env.sh
+```
+
 ## Notes
 
 - Run all commands on the S100 host.
