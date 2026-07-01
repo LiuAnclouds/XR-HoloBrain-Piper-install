@@ -113,10 +113,11 @@ RUNSERVICE
 sudo chmod +x runService.sh RoboticsServiceProcess
 LD_LIBRARY_PATH=$PWD:$PWD/lib:$PWD/SDK/arm64 ldd ./RoboticsServiceProcess | grep "not found" && exit 2 || echo "ldd OK: no missing libs"
 
-echo "[4/4] Patch HoloBrain launch RIGHT_READY"
+echo "[4/4] Patch HoloBrain launch RIGHT_READY if present"
 LAUNCH=$SOP_DIR/RoboOrchard/projects/HoloBrain/launch/templates/launch.yaml
-cp "$LAUNCH" "$LAUNCH.before-sop-install-$(date +%Y%m%d-%H%M%S)"
-python3 - <<PY
+if [ -f "$LAUNCH" ] && grep -q 'RIGHT_READY:' "$LAUNCH"; then
+  cp "$LAUNCH" "$LAUNCH.before-sop-install-$(date +%Y%m%d-%H%M%S)"
+  python3 - <<PY
 from pathlib import Path
 import re
 p=Path('$LAUNCH')
@@ -124,6 +125,9 @@ s=p.read_text()
 s=re.sub(r'RIGHT_READY: "[^"]+"', 'RIGHT_READY: "$RIGHT_READY"', s, count=1)
 p.write_text(s)
 PY
-grep -n 'RIGHT_READY' "$LAUNCH"
+  grep -n 'RIGHT_READY' "$LAUNCH"
+else
+  echo "RIGHT_READY is not present in launch.yaml, skip patch."
+fi
 
 echo "Install complete. Next: bash install_piper_sdk.sh"
