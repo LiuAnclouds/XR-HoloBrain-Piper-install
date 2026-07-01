@@ -3,7 +3,7 @@ set -euo pipefail
 
 DOCKER_NAME=${DOCKER_NAME:-holobrain}
 IMAGE_NAME=${IMAGE_NAME:-holobrain-dev:s100}
-SOP_DIR=${SOP_DIR:-/home/sunrise/moonxkj/SOP}
+SOP_DIR=${SOP_DIR:-$HOME/SOP}
 
 ROBO_REPO=${ROBO_REPO:-https://github.com/HorizonRobotics/RoboOrchard.git}
 PYBIND_REPO=${PYBIND_REPO:-https://github.com/XR-Robotics/XRoboToolkit-PC-Service-Pybind.git}

@@ -7,8 +7,8 @@ This repository installs the S100 XR HoloBrain Piper environment using the same 
 On the S100 host:
 
 ```bash
-mkdir -p /home/sunrise/moonxkj/SOP
-cd /home/sunrise/moonxkj/SOP
+mkdir -p ~/SOP
+cd ~/SOP
 
 git clone https://github.com/LiuAnclouds/XR-HoloBrain-Piper-install.git deploy
 cd deploy
@@ -42,7 +42,7 @@ patches/pybind_patch.cpp   # local full pybind replacement file
 ## 3. Install Order
 
 ```bash
-cd /home/sunrise/moonxkj/SOP/deploy
+cd ~/SOP/deploy
 
 bash build_holobrain_image.sh
 bash run_holobrain_container.sh

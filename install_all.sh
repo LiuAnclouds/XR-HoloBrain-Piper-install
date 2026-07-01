@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOCKER_NAME=${DOCKER_NAME:-holobrain}
-SOP_DIR=${SOP_DIR:-/home/sunrise/moonxkj/SOP}
+SOP_DIR=${SOP_DIR:-$HOME/SOP}
 ROBO_PATH=/moonxkj/RoboOrchard
 DEB_PATH=${DEB_PATH:-$SOP_DIR/XRoboToolkit-PC-Service-Pybind/tmp/XRoboToolkit-PC-Service/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb}
 RIGHT_READY=${RIGHT_READY:-"[-0.108, 0.096, -1.026, 0.174, 1.077, -0.045, 0.0]"}

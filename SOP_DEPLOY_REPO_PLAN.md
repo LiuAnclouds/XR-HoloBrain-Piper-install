@@ -25,8 +25,8 @@ XR-HoloBrain-Piper-install/
 ## Clone command on S100
 
 ```bash
-mkdir -p /home/sunrise/moonxkj/SOP
-cd /home/sunrise/moonxkj/SOP
+mkdir -p ~/SOP
+cd ~/SOP
 git clone https://github.com/LiuAnclouds/XR-HoloBrain-Piper-install.git deploy
 cd deploy
 ```

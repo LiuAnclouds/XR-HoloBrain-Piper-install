@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-SOP_DIR=${SOP_DIR:-/home/sunrise/moonxkj/SOP}
+SOP_DIR=${SOP_DIR:-$HOME/SOP}
 LAUNCH_DIR=${LAUNCH_DIR:-$SOP_DIR/RoboOrchard/projects/HoloBrain/launch/templates}
 
 echo "[1/2] Start PC Service"
