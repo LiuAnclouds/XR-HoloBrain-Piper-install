@@ -7,7 +7,12 @@ PIPER_ROS_ZIP_URL=${PIPER_ROS_ZIP_URL:-https://github.com/agilexrobotics/piper_r
 PIPER_URDF_NAME=${PIPER_URDF_NAME:-piper_no_gripper_description.urdf}
 
 # piper_sdk is intentionally installed separately from the Docker image.
-docker exec -i "$DOCKER_NAME" bash <<BASH
+docker exec -i \
+  -e PIPER_PATH="$PIPER_PATH" \
+  -e PIPER_ROS_REPO="$PIPER_ROS_REPO" \
+  -e PIPER_ROS_ZIP_URL="$PIPER_ROS_ZIP_URL" \
+  -e PIPER_URDF_NAME="$PIPER_URDF_NAME" \
+  "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$PIPER_PATH" ]; then
   echo "piper_sdk source is not mounted at $PIPER_PATH" >&2
