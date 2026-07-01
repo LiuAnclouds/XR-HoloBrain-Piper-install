@@ -55,9 +55,6 @@ RUN python3 -m pip install --no-cache-dir \
     scipy \
     pyyaml \
     transforms3d \
-    mujoco \
-    meshcat \
-    placo \
     tyro
 
 RUN if [ "$USE_ALIYUN_MIRROR" = "1" ]; then \
