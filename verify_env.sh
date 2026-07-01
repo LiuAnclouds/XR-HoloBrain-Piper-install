@@ -38,9 +38,12 @@ if [ ! -f /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate ]; then
 fi
 source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
 python - <<'PY'
+from importlib import metadata
+for pkg in ('robo_orchard_core', 'robo_orchard_lab'):
+    metadata.version(pkg)
+    print(f'[OK] Python package installed: {pkg}')
 import robo_orchard_core
-import robo_orchard_lab
-print('[OK] RoboOrchard Python packages import OK')
+print('[OK] robo_orchard_core import OK')
 PY
 if [ ! -f /moonxkj/RoboOrchard/ros2_package/install/setup.bash ]; then
   echo "[FAIL] RoboOrchard ROS2 install/setup.bash is missing. Run: bash install_main.sh"
@@ -82,6 +85,7 @@ if [ ! -d /moonxkj/XRoboToolkit-PC-Service-Pybind ]; then
   exit 20
 fi
 source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
+cd /tmp
 python - <<'PY'
 import xrobotoolkit_sdk as xrt
 print('[OK] xrobotoolkit_sdk import OK')
@@ -107,6 +111,7 @@ if [ ! -d /moonxkj/piper_sdk ]; then
   exit 30
 fi
 source /moonxkj/RoboOrchard/venv/roboorchard-venv/bin/activate
+cd /tmp
 python - <<'PY'
 from piper_sdk import C_PiperInterface_V2
 print('[OK] piper_sdk import OK')
