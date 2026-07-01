@@ -67,6 +67,9 @@ import robo_orchard_core
 import netifaces
 import pydantic
 import tornado
+import pymongo
+import bson
+import cbor2
 print('[OK] robo_orchard_core import OK')
 print('[OK] ROS runtime Python deps import OK')
 PY
