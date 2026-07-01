@@ -10,7 +10,7 @@ git clone https://github.com/LiuAnclouds/XR-HoloBrain-Piper-install.git deploy
 cd deploy
 ```
 
-## 2. Install
+## 2. Install Environment
 
 ```bash
 bash build_holobrain_image.sh
@@ -28,20 +28,9 @@ bash install_all.sh
 bash install_piper_sdk.sh
 ```
 
-## 3. Start
-
-```bash
-bash start.sh
-```
-
-## 4. Check
-
-```bash
-bash check.sh
-```
-
 ## Notes
 
 - Run all commands on the S100 host.
-- Make sure the robot is in a safe state before running `bash start.sh`.
+- This README only covers environment setup.
+- Starting PC Service or HoloBrain control is handled separately after installation.
 - Default workspace path is `~/SOP`. Override with `SOP_DIR=/path/to/SOP` if needed.

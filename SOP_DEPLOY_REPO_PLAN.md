@@ -38,8 +38,9 @@ bash build_holobrain_image.sh
 bash run_holobrain_container.sh
 bash install_all.sh
 bash install_piper_sdk.sh
-bash start.sh
-bash check.sh
+# Optional after environment setup:
+# bash start.sh
+# bash check.sh
 ```
 
 ## Upstream repositories cloned by run_holobrain_container.sh
