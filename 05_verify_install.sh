@@ -66,6 +66,7 @@ for pkg in ('robo_orchard_core', 'robo_orchard_lab'):
 import robo_orchard_core
 import netifaces
 import pydantic
+import tornado
 print('[OK] robo_orchard_core import OK')
 print('[OK] ROS runtime Python deps import OK')
 PY
