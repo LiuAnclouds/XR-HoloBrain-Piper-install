@@ -44,21 +44,6 @@ check_container() {
 }
 
 
-check_system_python_deps() {
-  section "2. Container system Python deps"
-  docker exec -i "$DOCKER_NAME" bash <<'BASH'
-set -e
-python3 - <<'PY'
-for mod in ('tornado', 'pydantic', 'netifaces'):
-    __import__(mod)
-    print(f'[OK] system Python import OK: {mod}')
-PY
-BASH
-  local rc=$?
-  if [ $rc -ne 0 ]; then
-    fail "Container system Python deps are incomplete. Run: bash 03_install_roboorchard_xr.sh"
-  fi
-}
 
 check_roboorchard() {
   section "3. RoboOrchard + ROS2"
@@ -110,6 +95,14 @@ if [ -d "$ROBO_PATH/ros2_package/install/robo_orchard_piper_ros2" ]; then
   echo "[OK] ROS2 package installed: robo_orchard_piper_ros2"
 else
   echo "[FAIL] ROS2 package install dir missing: robo_orchard_piper_ros2"
+  missing=1
+fi
+teleop_entry="$ROBO_PATH/ros2_package/install/lib/robo_orchard_teleop_ros2/pico_bridge"
+if [ -f "$teleop_entry" ] && head -1 "$teleop_entry" | grep -q "$ROBO_PATH/venv/roboorchard-venv/bin/python3"; then
+  echo "[OK] teleop entrypoint uses venv python"
+else
+  echo "[FAIL] teleop entrypoint does not use venv python: $teleop_entry"
+  [ -f "$teleop_entry" ] && head -1 "$teleop_entry" || true
   missing=1
 fi
 rm -f "$pkg_list"
@@ -194,7 +187,6 @@ check_pc_service() {
 
 check_host_tools
 check_container && {
-  check_system_python_deps
   check_roboorchard
   check_xr_pybind
   check_piper_sdk

@@ -53,9 +53,6 @@ RUN if [ "$INSTALL_TORCH" = "1" ]; then \
 RUN python3 -m pip install --no-cache-dir \
     tmuxp \
     pybind11 \
-    tornado \
-    pydantic \
-    netifaces \
     numpy \
     scipy \
     pyyaml \
