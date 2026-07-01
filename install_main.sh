@@ -6,6 +6,7 @@ SOP_DIR=${SOP_DIR:-$HOME/SOP}
 ROBO_PATH=/moonxkj/RoboOrchard
 DEB_PATH=${DEB_PATH:-$SOP_DIR/XRoboToolkit-PC-Service-Pybind/tmp/XRoboToolkit-PC-Service/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb}
 PC_SERVICE_DEB_URL=${PC_SERVICE_DEB_URL:-https://github.com/XR-Robotics/XRoboToolkit-PC-Service/releases/download/v1.0.0/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb}
+ICU73_URL=${ICU73_URL:-https://download.qt.io/development_releases/prebuilt/icu/prebuilt/73.2/icu-linux-g++-Debian11.6-aarch64.7z}
 RIGHT_READY=${RIGHT_READY:-"[-0.108, 0.096, -1.026, 0.174, 1.077, -0.045, 0.0]"}
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 PATCH_CPP=${PATCH_CPP:-$SCRIPT_DIR/patches/pybind_patch.cpp}
@@ -56,7 +57,7 @@ BASH
 
 echo "[3/4] Install host PC Service and patch runService.sh"
 sudo apt-get update
-sudo apt-get install -y wget qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6core5compat6-dev
+sudo apt-get install -y wget p7zip-full qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libqt6core5compat6-dev
 if [ ! -f "$DEB_PATH" ]; then
   echo "PC Service deb not found locally, downloading official release..."
   tmp_deb=/tmp/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb
@@ -69,6 +70,24 @@ if [ -f /opt/apps/roboticsservice.tar ]; then
   sudo tar --wildcards -xvf /opt/apps/roboticsservice.tar -C /opt/apps 'roboticsservice/lib/libicu*'
 fi
 cd /opt/apps/roboticsservice
+if ! ls lib/libicu*.so.73* >/dev/null 2>&1; then
+  echo "ICU73 libraries not found in PC Service package, downloading Qt prebuilt ICU73..."
+  tmp_icu=/tmp/icu73-aarch64.7z
+  tmp_icu_dir=/tmp/icu73-aarch64
+  rm -rf "$tmp_icu_dir"
+  mkdir -p "$tmp_icu_dir"
+  wget -O "$tmp_icu" "$ICU73_URL"
+  7z x -y "$tmp_icu" -o"$tmp_icu_dir" >/dev/null
+  sudo mkdir -p lib
+  find "$tmp_icu_dir" -type f -name 'libicu*.so.73*' -exec sudo cp -a {} lib/ \;
+  cd lib
+  for f in libicu*.so.73.*; do
+    [ -e "$f" ] || continue
+    base=${f%.*}
+    sudo ln -sf "$f" "$base"
+  done
+  cd ..
+fi
 sudo tee runService.sh > /dev/null <<'RUNSERVICE'
 #!/bin/bash
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
