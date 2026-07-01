@@ -9,7 +9,7 @@ PYBIND_PATH=${PYBIND_PATH:-$CONTAINER_ROOT/XRoboToolkit-PC-Service-Pybind}
 DEB_PATH=${DEB_PATH:-$SOP_DIR/XRoboToolkit-PC-Service-Pybind/tmp/XRoboToolkit-PC-Service/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb}
 PC_SERVICE_DEB_URL=${PC_SERVICE_DEB_URL:-https://github.com/XR-Robotics/XRoboToolkit-PC-Service/releases/download/v1.0.0/XRoboToolkit-PC-Service_1.0.0.0_arm64.deb}
 ICU73_URL=${ICU73_URL:-https://download.qt.io/development_releases/prebuilt/icu/prebuilt/73.2/icu-linux-g++-Debian11.6-aarch64.7z}
-RIGHT_READY=${RIGHT_READY:-"[-0.108, 0.096, -1.026, 0.174, 1.077, -0.045, 0.0]"}
+RIGHT_READY=${RIGHT_READY:-}
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 PATCH_CPP=${PATCH_CPP:-$SCRIPT_DIR/patches/pybind_patch.cpp}
 
@@ -129,11 +129,12 @@ RUNSERVICE
 sudo chmod +x runService.sh RoboticsServiceProcess
 LD_LIBRARY_PATH=$PWD:$PWD/lib:$PWD/SDK/arm64 ldd ./RoboticsServiceProcess | grep "not found" && exit 2 || echo "ldd OK: no missing libs"
 
-echo "[4/4] Patch HoloBrain launch RIGHT_READY if present"
+echo "[4/4] Patch HoloBrain launch RIGHT_READY if requested"
 LAUNCH=$SOP_DIR/RoboOrchard/projects/HoloBrain/launch/templates/launch.yaml
-if [ -f "$LAUNCH" ] && grep -q 'RIGHT_READY:' "$LAUNCH"; then
-  cp "$LAUNCH" "$LAUNCH.before-sop-install-$(date +%Y%m%d-%H%M%S)"
-  python3 - <<PY
+if [ -n "$RIGHT_READY" ]; then
+  if [ -f "$LAUNCH" ] && grep -q 'RIGHT_READY:' "$LAUNCH"; then
+    cp "$LAUNCH" "$LAUNCH.before-sop-install-$(date +%Y%m%d-%H%M%S)"
+    python3 - <<PY
 from pathlib import Path
 import re
 p=Path('$LAUNCH')
@@ -141,9 +142,12 @@ s=p.read_text()
 s=re.sub(r'RIGHT_READY: "[^"]+"', 'RIGHT_READY: "$RIGHT_READY"', s, count=1)
 p.write_text(s)
 PY
-  grep -n 'RIGHT_READY' "$LAUNCH"
+    grep -n 'RIGHT_READY' "$LAUNCH"
+  else
+    echo "RIGHT_READY was provided, but launch.yaml has no RIGHT_READY field. Skip patch."
+  fi
 else
-  echo "RIGHT_READY is not present in launch.yaml, skip patch."
+  echo "RIGHT_READY not provided. Skip launch.yaml patch."
 fi
 
 echo "Install complete. Next: bash 04_install_piper_sdk.sh"

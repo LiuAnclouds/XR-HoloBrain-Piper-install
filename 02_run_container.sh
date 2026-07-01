@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOCKER_NAME=${DOCKER_NAME:-holobrain}
-IMAGE_NAME=${IMAGE_NAME:-holobrain-dev:s100}
+IMAGE_NAME=${IMAGE_NAME:-holobrain-dev:latest}
 SOP_DIR=${SOP_DIR:-$HOME/SOP}
 CONTAINER_ROOT=${CONTAINER_ROOT:-/moonxkj}
 
@@ -46,7 +46,7 @@ docker run -itd \
   -e USER=${USER:-sunrise} \
   -e DOCKER_USER=${USER:-sunrise} \
   -e PYTHONUNBUFFERED=1 \
-  -e ROS_DOMAIN_ID=2 \
+  -e ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-2} \
   -e ROS2_INSTALL_PATH=/opt/ros/humble/ \
   -e no_proxy="localhost,127.0.0.1" \
   -v /dev:/dev \

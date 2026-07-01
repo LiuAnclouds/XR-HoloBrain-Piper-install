@@ -42,6 +42,21 @@ CONTAINER_ROOT=/workspace bash 04_install_piper_sdk.sh
 CONTAINER_ROOT=/workspace bash 05_verify_install.sh
 ```
 
+
+Common optional parameters:
+
+```bash
+SOP_DIR=~/SOP                  # host workspace directory
+CONTAINER_ROOT=/moonxkj        # container mount root
+DOCKER_NAME=holobrain          # container name
+IMAGE_NAME=holobrain-dev:latest
+ROS_DOMAIN_ID=2
+RIGHT_READY='[...]'            # optional; only patches launch.yaml if provided
+```
+
+
+`RIGHT_READY` is intentionally optional. The installer does not force a robot-specific safe pose or overwrite a stock `launch.yaml` unless this variable is explicitly provided and the file already contains a `RIGHT_READY:` field.
+
 ## Notes
 
 - Run commands on the robot host.
