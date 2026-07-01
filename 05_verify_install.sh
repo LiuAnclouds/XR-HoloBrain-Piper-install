@@ -43,8 +43,25 @@ check_container() {
   fi
 }
 
+
+check_system_python_deps() {
+  section "2. Container system Python deps"
+  docker exec -i "$DOCKER_NAME" bash <<'BASH'
+set -e
+python3 - <<'PY'
+for mod in ('tornado', 'pydantic', 'netifaces'):
+    __import__(mod)
+    print(f'[OK] system Python import OK: {mod}')
+PY
+BASH
+  local rc=$?
+  if [ $rc -ne 0 ]; then
+    fail "Container system Python deps are incomplete. Run: bash 03_install_roboorchard_xr.sh"
+  fi
+}
+
 check_roboorchard() {
-  section "2. RoboOrchard + ROS2"
+  section "3. RoboOrchard + ROS2"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$ROBO_PATH" ]; then
@@ -107,7 +124,7 @@ BASH
 }
 
 check_xr_pybind() {
-  section "3. XRoboToolkit PC Service Pybind"
+  section "4. XRoboToolkit PC Service Pybind"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" -e PYBIND_PATH="$PYBIND_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$PYBIND_PATH" ]; then
@@ -133,7 +150,7 @@ BASH
 }
 
 check_piper_sdk() {
-  section "4. piper_sdk"
+  section "5. piper_sdk"
   docker exec -i -e ROBO_PATH="$ROBO_PATH" -e PIPER_PATH="$PIPER_PATH" "$DOCKER_NAME" bash <<'BASH'
 set -e
 if [ ! -d "$PIPER_PATH" ]; then
@@ -156,7 +173,7 @@ BASH
 }
 
 check_pc_service() {
-  section "5. Host PC Service"
+  section "6. Host PC Service"
   if [ ! -x /opt/apps/roboticsservice/RoboticsServiceProcess ]; then
     fail "PC Service executable is missing: /opt/apps/roboticsservice/RoboticsServiceProcess"
     echo "[FAIL] Run: bash 03_install_roboorchard_xr.sh"
@@ -177,6 +194,7 @@ check_pc_service() {
 
 check_host_tools
 check_container && {
+  check_system_python_deps
   check_roboorchard
   check_xr_pybind
   check_piper_sdk

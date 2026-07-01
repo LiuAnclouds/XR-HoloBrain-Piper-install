@@ -28,6 +28,7 @@ docker exec -i "$DOCKER_NAME" bash <<BASH
 set -e
 git config --global --add safe.directory '*'
 python3 -m pip install --upgrade pip
+python3 -m pip install tornado pydantic netifaces
 if [ ! -d "$ROBO_PATH/.git" ]; then echo "RoboOrchard source is not mounted at $ROBO_PATH" >&2; exit 1; fi
 python3 -m venv $ROBO_PATH/venv/roboorchard-venv || true
 source $ROBO_PATH/venv/roboorchard-venv/bin/activate
