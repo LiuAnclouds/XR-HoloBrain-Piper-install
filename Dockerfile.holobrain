@@ -51,7 +51,7 @@ RUN if [ "$INSTALL_TORCH" = "1" ]; then \
 RUN python3 -m pip install --no-cache-dir \
     tmuxp \
     pybind11 \
-    numpy==1.26.4 \
+    numpy \
     scipy \
     pyyaml \
     transforms3d \
