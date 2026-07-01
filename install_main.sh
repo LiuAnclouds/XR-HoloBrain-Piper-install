@@ -66,12 +66,9 @@ if [ ! -f "$DEB_PATH" ]; then
   sudo install -m 0644 "$tmp_deb" "$DEB_PATH"
 fi
 sudo dpkg -i "$DEB_PATH"
-if [ -f /opt/apps/roboticsservice.tar ]; then
-  sudo tar --wildcards -xvf /opt/apps/roboticsservice.tar -C /opt/apps 'roboticsservice/lib/libicu*'
-fi
 cd /opt/apps/roboticsservice
 if ! ls lib/libicu*.so.73* >/dev/null 2>&1; then
-  echo "ICU73 libraries not found in PC Service package, downloading Qt prebuilt ICU73..."
+  echo "Installing ICU73 libraries for PC Service..."
   tmp_icu=/tmp/icu73-aarch64.7z
   tmp_icu_dir=/tmp/icu73-aarch64
   rm -rf "$tmp_icu_dir"

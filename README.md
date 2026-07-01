@@ -41,3 +41,4 @@ bash verify_env.sh
 - This README only covers environment setup.
 - Starting PC Service or HoloBrain control is handled separately after installation.
 - Default workspace path is `~/SOP`. Override with `SOP_DIR=/path/to/SOP` if needed.
+- PC Service ICU73 is installed from the Qt official prebuilt ICU package; no local `roboticsservice.tar` is required.
