@@ -62,7 +62,10 @@ for pkg in ('robo_orchard_core', 'robo_orchard_lab'):
     metadata.version(pkg)
     print(f'[OK] Python package installed: {pkg}')
 import robo_orchard_core
+import netifaces
+import pydantic
 print('[OK] robo_orchard_core import OK')
+print('[OK] ROS runtime Python deps import OK')
 PY
 if [ ! -f "$ROBO_PATH/ros2_package/install/setup.bash" ]; then
   echo "[FAIL] RoboOrchard ROS2 install/setup.bash is missing. Run: bash 03_install_roboorchard_xr.sh"
