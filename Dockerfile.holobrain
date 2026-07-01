@@ -55,7 +55,10 @@ RUN python3 -m pip install --no-cache-dir \
     scipy \
     pyyaml \
     transforms3d \
-    tyro
+    tyro \
+    mujoco \
+    meshcat \
+    placo==0.9.23
 
 RUN if [ "$USE_ALIYUN_MIRROR" = "1" ]; then \
       mv /etc/apt/sources.list.bak /etc/apt/sources.list && \

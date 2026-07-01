@@ -97,4 +97,4 @@ p.write_text(s)
 PY
 grep -n 'RIGHT_READY' "$LAUNCH"
 
-echo "Install complete. Next: bash install_piper_sdk.sh, then bash start.sh, then bash check.sh"
+echo "Install complete. Next: bash install_piper_sdk.sh"
