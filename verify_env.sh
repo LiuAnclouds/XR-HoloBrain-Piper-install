@@ -51,21 +51,29 @@ if [ ! -f /moonxkj/RoboOrchard/ros2_package/install/setup.bash ]; then
 fi
 source /opt/ros/humble/setup.bash
 source /moonxkj/RoboOrchard/ros2_package/install/setup.bash
+pkg_list=$(mktemp)
+ros2 pkg list > "$pkg_list"
 missing=0
 for pkg in \
   robo_orchard_data_msg_ros2 \
   robo_orchard_pico_msg_ros2 \
   robo_orchard_teleop_msg_ros2 \
   robo_orchard_piper_msg_ros2 \
-  robo_orchard_piper_ros2 \
   robo_orchard_teleop_ros2; do
-  if ros2 pkg list | grep -qx "$pkg"; then
+  if grep -qx "$pkg" "$pkg_list"; then
     echo "[OK] ROS2 package found: $pkg"
   else
     echo "[FAIL] ROS2 package missing: $pkg"
     missing=1
   fi
 done
+if [ -d /moonxkj/RoboOrchard/ros2_package/install/robo_orchard_piper_ros2 ]; then
+  echo "[OK] ROS2 package installed: robo_orchard_piper_ros2"
+else
+  echo "[FAIL] ROS2 package install dir missing: robo_orchard_piper_ros2"
+  missing=1
+fi
+rm -f "$pkg_list"
 exit $missing
 BASH
   local rc=$?
