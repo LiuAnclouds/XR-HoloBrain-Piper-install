@@ -17,8 +17,8 @@ python3 -m pip install --upgrade pip
 if [ ! -d "$ROBO_PATH/.git" ]; then echo "RoboOrchard source is not mounted at $ROBO_PATH" >&2; exit 1; fi
 python3 -m venv $ROBO_PATH/venv/roboorchard-venv || true
 source $ROBO_PATH/venv/roboorchard-venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install empy
+python -m pip install --upgrade pip wheel
+python -m pip install "setuptools<82" "empy==3.3.4"
 cd $ROBO_PATH
 pip install -e python/robo_orchard_core || true
 pip install -e python/robo_orchard_schemas || true
