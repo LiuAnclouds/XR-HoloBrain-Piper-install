@@ -102,11 +102,13 @@ else
   missing=1
 fi
 teleop_entry="$ROBO_PATH/ros2_package/install/lib/robo_orchard_teleop_ros2/pico_bridge"
+old_teleop_entry="$ROBO_PATH/ros2_package/install/robo_orchard_teleop_ros2/lib/robo_orchard_teleop_ros2/pico_bridge"
 if [ -f "$teleop_entry" ] && head -1 "$teleop_entry" | grep -q "$ROBO_PATH/venv/roboorchard-venv/bin/python3"; then
   echo "[OK] teleop entrypoint uses venv python"
 else
   echo "[FAIL] teleop entrypoint does not use venv python: $teleop_entry"
   [ -f "$teleop_entry" ] && head -1 "$teleop_entry" || true
+  [ -f "$old_teleop_entry" ] && echo "[FAIL] old isolated entrypoint still exists: $old_teleop_entry" && head -1 "$old_teleop_entry" || true
   missing=1
 fi
 rm -f "$pkg_list"

@@ -39,7 +39,7 @@ pip install -e python/robo_orchard_lab || true
 cd $ROBO_PATH/ros2_package
 rm -rf build install log
 source /opt/ros/humble/setup.bash
-"$ROBO_PATH/venv/roboorchard-venv/bin/colcon" build --symlink-install --install-base install --build-base build --cmake-args -DPYTHON_EXECUTABLE=$ROBO_PATH/venv/roboorchard-venv/bin/python3 -DPython3_EXECUTABLE=$ROBO_PATH/venv/roboorchard-venv/bin/python3
+"$ROBO_PATH/venv/roboorchard-venv/bin/colcon" build --symlink-install --merge-install --install-base install --build-base build --cmake-args -DPYTHON_EXECUTABLE=$ROBO_PATH/venv/roboorchard-venv/bin/python3 -DPython3_EXECUTABLE=$ROBO_PATH/venv/roboorchard-venv/bin/python3
 BASH
 
 echo "[note] piper_sdk is installed separately by bash 04_install_piper_sdk.sh"
