@@ -7,6 +7,7 @@ CONTAINER_ROOT=${CONTAINER_ROOT:-/moonxkj}
 ROBO_PATH=${ROBO_PATH:-$CONTAINER_ROOT/RoboOrchard}
 PYBIND_PATH=${PYBIND_PATH:-$CONTAINER_ROOT/XRoboToolkit-PC-Service-Pybind}
 PIPER_PATH=${PIPER_PATH:-$CONTAINER_ROOT/piper_sdk}
+CHECK_PIPER=${CHECK_PIPER:-1}
 FAILED=0
 
 ok() { echo "[OK] $*"; }
@@ -245,7 +246,12 @@ check_container && {
   check_tmuxp_docker_shell
   check_roboorchard
   check_xr_pybind
-  check_piper_sdk
+  if [ "$CHECK_PIPER" = "1" ]; then
+    check_piper_sdk
+  else
+    section "5. piper_sdk"
+    warn "Skipped piper_sdk check because CHECK_PIPER=0"
+  fi
 }
 check_pc_service
 
